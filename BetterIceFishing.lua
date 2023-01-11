@@ -1,7 +1,7 @@
 local addonName, addon = ...
 local internal = {
   -- Internal Settings for later use
-	debug = true,
+	debug = false,
   clear_override = false,
 	binding_set = false,
 	use_BetterFishingKey = true
