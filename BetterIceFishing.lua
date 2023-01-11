@@ -1,7 +1,7 @@
 local addonName, addon = ...
 local internal = {
   -- Internal Settings for later use
-	debug = false,
+	debug = true,
   clear_override = false,
 	binding_set = false,
 	use_BetterFishingKey = true
@@ -172,8 +172,9 @@ function addon:OnEvent(event, ...)
 			addon:DebugPrint("Binding cleared (Override)!")
     end
 	elseif event == "CURSOR_CHANGED" then
+		if (UnitChannelInfo("player") ~= nil) or (not internal.binding_set) then return end
 		C_Timer.After(0.25, function(self)
-			if internal.binding_set and (not UnitChannelInfo("player")) and (not addon:IsMouseOverIceFishingHole())  then
+			if (not addon:IsMouseOverIceFishingHole())  then
 				addon:SecureClearBindings()
 			end
 		end)
