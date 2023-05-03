@@ -104,7 +104,7 @@ end
 function addon:IsMouseOverIceFishingHole()
 	local guid = UnitGUID("mouseover") or ""
 	local id = tonumber(guid:match("-(%d+)-%x+$"), 10)
-	return id and id == 192631
+	return id and (id == 192631 or id == 197596)
 end
 
 function addon:SetInteractMouseOver()
@@ -182,7 +182,7 @@ function addon:OnEvent(event, ...)
 		if (not addon:AllowIceFishing()) or IsTaintable() then return end
 		local guid = UnitGUID("mouseover") or ""
 		local id = tonumber(guid:match("-(%d+)-%x+$"), 10) or 0
-		if id and id == 192631 then
+		if id and (id == 192631 or id == 197596) then
 			addon:SetInteractMouseOver()
 			addon:DebugPrint("Ice Fishing Hole found...")
 			addon:DebugPrint("Set Binding to: Interact with Mouseover")
