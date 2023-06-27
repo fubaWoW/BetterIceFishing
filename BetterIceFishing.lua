@@ -22,6 +22,26 @@ local SoundCVars = {
 	"Sound_SFXVolume",
 }
 
+local FishingCastIDs = {
+	377895,		-- Ice Fishing
+	405274		-- Disgusting Vat Fishing
+}
+
+local FishingHoleIDs = {
+	192631,		-- Ice Fishing Hole
+	197596,		-- Deep Ice Fishing Hole
+	203183, 	-- Disgusting Vat (Zskera Vaults)
+}
+
+local function tableContains(t, v)
+  for i = 1, #t do
+    if t[i] == v then
+      return true
+    end
+  end
+  return false
+end
+
 BINDING_NAME_BETTERICEFISHINGKEY = "Fish and Interact"
 local binding = "BETTERICEFISHINGKEY"
 
@@ -31,12 +51,14 @@ function addon:DebugPrint(text)
   end
 end
 
+--[[
 function addon:GetFishingCastID()
   return 377895
 end
+]]
 
 function addon:GetFishingName()
-  return GetSpellInfo(377895)
+  return GetSpellInfo(7620) or GetSpellInfo(377895)
 end
 
 function addon:GetUnitID()
@@ -49,11 +71,9 @@ local function IsTaintable()
 end
 
 function addon:IsFishing()
-  local spellID = select(8, UnitChannelInfo("player"))
-  if spellID == self:GetFishingCastID() then
-    return true
-  end
-  return false
+  local spellID = select(8, UnitChannelInfo("player"))	
+	return spellID and tableContains(FishingCastIDs, spellID)
+	--return spellID == self:GetFishingCastID()
 end
 
 function addon:AllowIceFishing()
@@ -104,7 +124,7 @@ end
 function addon:IsMouseOverIceFishingHole()
 	local guid = UnitGUID("mouseover") or ""
 	local id = tonumber(guid:match("-(%d+)-%x+$"), 10)
-	return id and (id == 192631 or id == 197596)
+	return id and tableContains(FishingHoleIDs, id)
 end
 
 function addon:SetInteractMouseOver()
@@ -174,6 +194,7 @@ function addon:OnEvent(event, ...)
 		if (UnitChannelInfo("player") ~= nil) or (not internal.binding_set) then return end
 		C_Timer.After(0.25, function(self)
 			if (not addon:IsMouseOverIceFishingHole())  then
+				addon:ResetCVars()
 				addon:SecureClearBindings()
 			end
 		end)
@@ -182,7 +203,7 @@ function addon:OnEvent(event, ...)
 		if (not addon:AllowIceFishing()) or IsTaintable() then return end
 		local guid = UnitGUID("mouseover") or ""
 		local id = tonumber(guid:match("-(%d+)-%x+$"), 10) or 0
-		if id and (id == 192631 or id == 197596) then
+		if (id and id ~= 0 and tableContains(FishingHoleIDs, id)) then
 			addon:SetInteractMouseOver()
 			addon:DebugPrint("Ice Fishing Hole found...")
 			addon:DebugPrint("Set Binding to: Interact with Mouseover")
@@ -190,7 +211,8 @@ function addon:OnEvent(event, ...)
   elseif event == "UNIT_SPELLCAST_CHANNEL_START" then
 		-- Event: UNIT_SPELLCAST_CHANNEL_START
     local unit,_,spellID = ...
-    if unit == "player" and spellID == self:GetFishingCastID() then
+    --if unit == "player" and spellID == self:GetFishingCastID() then
+    if unit == "player" and tableContains(FishingCastIDs, spellID)  then
 			addon:SetCVars()
 			if IsTaintable() then return end
       addon:SetInteractTarget()
@@ -199,7 +221,8 @@ function addon:OnEvent(event, ...)
   elseif event == "UNIT_SPELLCAST_CHANNEL_STOP" then
 		-- Event: UNIT_SPELLCAST_CHANNEL_STOP
     local unit,_,spellID = ...
-    if unit == "player" and spellID == self:GetFishingCastID() then
+    --if unit == "player" and spellID == self:GetFishingCastID() then
+		if unit == "player" and tableContains(FishingCastIDs, spellID)  then
       addon:ResetCVars()
 			if addon:IsMouseOverIceFishingHole() then
 				if not IsTaintable() then
