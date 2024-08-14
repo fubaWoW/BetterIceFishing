@@ -1,4 +1,8 @@
 local addonName, addon = ...
+
+local IsAddOnLoaded = C_AddOns and C_AddOns.IsAddOnLoaded or IsAddOnLoaded
+local GetSpellInfo = C_Spell and C_Spell.GetSpellInfo or GetSpellInfo
+
 local internal = {
   -- Internal Settings for later use
 	debug = false,
