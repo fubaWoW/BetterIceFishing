@@ -298,7 +298,7 @@ end
 function addon:CreateSettings()
   local optionsFrame
 	optionsFrame = CreateFrame("Frame")
-	category, layout = Settings.RegisterCanvasLayoutCategory(optionsFrame, "|rBetter |cff00a2e8Ice|r Fishing|r |Tinterface/cursor/crosshair/fishing:18:18:0:0|t");
+	category, layout = Settings.RegisterCanvasLayoutCategory(optionsFrame, "Better Ice Fishing|r |Tinterface/cursor/crosshair/fishing:18:18:0:0|t");
 	category.ID = "BetterIceFishing";
 	Settings.RegisterAddOnCategory(category);
 
